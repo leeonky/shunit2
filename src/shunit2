@@ -783,7 +783,7 @@ _shunit_execSuite()
 
     # execute the test
     echo "${_shunit_test_}"
-    eval ${_shunit_test_}
+    ${_shunit_test_} | cat
 
     # execute the per-test tear-down function
     tearDown
