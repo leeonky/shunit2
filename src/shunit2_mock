@@ -1,0 +1,35 @@
+mock_working_path=/tmp/__shunit2_mock
+
+clear_global_vars() {
+	/bin/rm -rf "$mock_working_path"
+}
+
+set_global_var() {
+	local tmp_file="$mock_working_path"
+	for ((i=1; i<$#; ))
+	do
+		tmp_file="$tmp_file/$1"
+		shift
+	done
+	local tmp_path="$(dirname "$tmp_file")"
+	[ -e "$tmp_path" ] || /bin/mkdir -p "$tmp_path"
+	/bin/cat > "$tmp_file" <<EOF
+$1
+EOF
+}
+
+get_global_var() {
+	local tmp_file="$mock_working_path"
+	for ((i=0; i<$#; ))
+	do
+		tmp_file="$tmp_file/$1"
+		shift
+	done
+	[ -f "$tmp_file" ] && /bin/cat "$tmp_file"
+}
+
+rm_global_var() {
+	local tmp_file="$mock_working_path/$1"
+	/bin/rm -rf "$tmp_file"
+}
+
