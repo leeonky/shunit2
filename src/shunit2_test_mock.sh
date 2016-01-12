@@ -43,4 +43,44 @@ test_set_array_vars() {
 	assertEquals d "$(get_global_var var x 2)"
 }
 
+test_default_mock() {
+	mock_function mocked_function
+
+	mocked_function
+
+	assertEquals 0 $?
+}
+
+test_mock_with_code() {
+	mock_function fun_ret_100 'return 100'
+
+	fun_ret_100
+
+	assertEquals 100 $?
+}
+
+test_mock_call_times() {
+	mock_function fun_test
+
+	fun_test
+	assertEquals 1 $(get_global_var __mocked_fun fun_test called_times)
+
+	fun_test
+	assertEquals 2 $(get_global_var __mocked_fun fun_test called_times)
+}
+
+test_mock_call_with_args() {
+	mock_function fun_test
+
+	fun_test a
+	assertEquals a $(get_global_var __mocked_fun fun_test called_args 1 1)
+
+	fun_test 'a b'
+	assertEquals 'a b' "$(get_global_var __mocked_fun fun_test called_args 2 1)"
+
+	fun_test c d
+	assertEquals c $(get_global_var __mocked_fun fun_test called_args 3 1)
+	assertEquals d $(get_global_var __mocked_fun fun_test called_args 3 2)
+}
+
 . ${TH_SHUNIT}

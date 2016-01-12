@@ -33,3 +33,26 @@ rm_global_var() {
 	/bin/rm -rf "$tmp_file"
 }
 
+
+mock_function() {
+	local content='return 0'
+	if [ $# == 2 ]; then
+		content="$2"
+	fi
+	local body="$1() {
+	local CALLED_TIMES=\$(get_global_var __mocked_fun $1 called_times)
+	((CALLED_TIMES++))
+	set_global_var __mocked_fun $1 called_times \$CALLED_TIMES
+	local arg
+	local i=1
+	for arg in \"\$@\"
+	do
+		set_global_var __mocked_fun $1 called_args \$CALLED_TIMES \$i \"\$arg\"
+		((i++))
+	done
+	$content
+}"
+	rm_global_var __mocked_fun $1
+	set_global_var __mocked_fun $1 called_times 0
+	eval "$body"
+}
