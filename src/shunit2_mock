@@ -1,4 +1,4 @@
-TEST_WORKING_PATH=/tmp/__shunit2_tmp
+TEST_WORKING_PATH=${SYS_TEMP_PATH:-/tmp}/__shunit2_tmp
 
 clear_global_vars() {
 	/bin/rm -rf "$TEST_WORKING_PATH"
