@@ -16,5 +16,6 @@ testall: ${all_unit_tests}
 	@echo Test all done!
 
 ${sys_temp_path}/%_test.sh.rpt: %_test.sh %.sh
+	@echo '>>>>>>>>>>>>'${<}
 	@echo ${<} >> ${sys_temp_path}/last_shunit
 	@./${*}_test.sh
