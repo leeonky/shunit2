@@ -778,7 +778,7 @@ _shunit_execSuite()
     # disable skipping
     endSkipping
 
-    stderrf="${SYS_TEMP_PATH-:/tmp/}/stderrf"
+    stderrf="${SYS_TEMP_PATH:-/tmp}/stderrf"
     rm -f "$stderrf"
 
     # execute the per-test setup function
