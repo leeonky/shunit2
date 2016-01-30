@@ -83,7 +83,7 @@ print_error() {
 	if [ 0 == "$res" ]; then
 		res=1
 	fi
-	/bin/echo "$1" >&2
+	printf "\033[31m%s\033[0m\n" "$1"
 	return $res
 }
 

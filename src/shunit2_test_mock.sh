@@ -121,7 +121,7 @@ test_verify_never_called() {
 	fun_test
 	msg=$(mock_verify fun_test NEVER_CALLED 2>&1)
 	assertFalse "$LINENO" $?
-	assertEquals "$LINENO" "Expect <fun_test> shall never be called, but called <1> time(s)" "$msg"
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called, but called <1> time(s)")" "$msg"
 }
 
 test_verify_exactly_called() {
@@ -135,7 +135,7 @@ test_verify_exactly_called() {
 	fun_test
 	msg=$(mock_verify fun_test EXACTLY_CALLED 1 2>&1)
 	assertFalse "$LINENO" $?
-	assertEquals "$LINENO" "Expect <fun_test> shall never be called <1> times, but called <2> time(s)" "$msg"
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called <1> times, but called <2> time(s)")" "$msg"
 }
 
 test_verify_call_with_arg() {
@@ -152,27 +152,27 @@ test_verify_call_with_arg() {
 
 	msg=$(mock_verify fun_test IN_CALL 1 WITH_ARGS a b 2>&1)
 	assertFalse "$LINENO" $?
-	assertEquals "$LINENO" "Few expected arguments, passed <1> arguments in the calling <1> of <fun_test>" "$msg"
+	assertEquals "$LINENO" "$(print_error "Few expected arguments, passed <1> arguments in the calling <1> of <fun_test>")" "$msg"
 
 	msg=$(mock_verify fun_test IN_CALL 3 WITH_ARGS a 2>&1)
 	assertFalse "$LINENO" $?
-	assertEquals "$LINENO" "<fun_test> only be called <2> times." "$msg"
+	assertEquals "$LINENO" "$(print_error "<fun_test> only be called <2> times.")" "$msg"
 
 	msg=$(mock_verify fun_test IN_CALL 1 WITH_ARGS A 2>&1)
 	assertFalse "$LINENO" $?
-	assertEquals "$LINENO" "Unexpected argument <1> in the calling <1> of <fun_test>, expect:<A> but was:<a>" "$msg"
+	assertEquals "$LINENO" "$(print_error "Unexpected argument <1> in the calling <1> of <fun_test>, expect:<A> but was:<a>")" "$msg"
 
 	msg="$(mock_verify fun_test IN_CALL 2 WITH_ARGS a1 a2 2>&1)"
 	assertFalse "$LINENO" $?
-	assertEquals "$LINENO" "Unexpected argument <1> in the calling <2> of <fun_test>, expect:<a1> but was:<arg1>
-Unexpected argument <2> in the calling <2> of <fun_test>, expect:<a2> but was:<arg 2>" "$msg"
+	assertEquals "$LINENO" "$(print_error "Unexpected argument <1> in the calling <2> of <fun_test>, expect:<a1> but was:<arg1>")
+$(print_error "Unexpected argument <2> in the calling <2> of <fun_test>, expect:<a2> but was:<arg 2>")" "$msg"
 
 	mock_verify fun_test IN_CALL 2 WITH_ARGS __ANY_VALUE__ 'arg 2'
 	assertEquals "$LINENO" 0 $?
 
 	msg="$(mock_verify fun_test IN_CALL 2 WITH_ARGS arg1 2>&1)"
 	assertFalse "$LINENO" $?
-	assertEquals "$LINENO" "More unexpected arguments, passed <2> arguments in the calling <2> of <fun_test>" "$msg"
+	assertEquals "$LINENO" "$(print_error "More unexpected arguments, passed <2> arguments in the calling <2> of <fun_test>")" "$msg"
 
 	fun_test a b c
 	mock_verify fun_test IN_CALL 3 WITH_ARGS a __ANY_LAST__
@@ -197,10 +197,10 @@ test_verify_one_function_history() {
 	mock_verify fun_test CALL_LIST_START
 	msg="$(mock_verify fun_test CALLED_WITH_ARGS x 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "Unexpected argument <1> in the calling <1> of <fun_test>, expect:<x> but was:<a>" "$msg"
+	assertEquals "$LINENO" "$(print_error "Unexpected argument <1> in the calling <1> of <fun_test>, expect:<x> but was:<a>")" "$msg"
 	msg="$(mock_verify fun_test CALL_LIST_END 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "More unexpected called, <fun_test> was called <2> times" "$msg"
+	assertEquals "$LINENO" "$(print_error "More unexpected called, <fun_test> was called <2> times")" "$msg"
 }
 
 test_verify_multi_function_history() {
@@ -211,8 +211,8 @@ test_verify_multi_function_history() {
 	
 	msg="$(mock_verify fun_test1 COOP_CALLED_WITH_ARGS a 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "Only called <0> times" "$msg"
-	mock_verify fun_test1 COOP_CALLED_WITH_ARGS a 2>/dev/null
+	assertEquals "$LINENO" "$(print_error "Only called <0> times")" "$msg"
+	mock_verify fun_test1 COOP_CALLED_WITH_ARGS a 2>&1 1>/dev/null
 	mock_verify_all_called_end
 	assertEquals "$LINENO" 0 $?
 
@@ -220,8 +220,8 @@ test_verify_multi_function_history() {
 
 	msg="$(mock_verify fun_test2 COOP_CALLED_WITH_ARGS a 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "Unexpected called in all calling <1>, expect <fun_test2> called but <fun_test1>" "$msg"
-	mock_verify fun_test2 COOP_CALLED_WITH_ARGS a 2>/dev/null
+	assertEquals "$LINENO" "$(print_error "Unexpected called in all calling <1>, expect <fun_test2> called but <fun_test1>")" "$msg"
+	mock_verify fun_test2 COOP_CALLED_WITH_ARGS a 2>&1 1>/dev/null
 	mock_verify_all_called_end
 	assertEquals "$LINENO" 0 $?
 
@@ -230,8 +230,8 @@ test_verify_multi_function_history() {
 	mock_verify fun_test1 COOP_CALLED_WITH_ARGS a
 	msg="$(mock_verify fun_test2 COOP_CALLED_WITH_ARGS a 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "Unexpected argument <1> of <1> calling <fun_test2> in all calling <2>, expect:<a> but was:<b>" "$msg"
-	mock_verify fun_test2 COOP_CALLED_WITH_ARGS a 2>/dev/null
+	assertEquals "$LINENO" "$(print_error "Unexpected argument <1> of <1> calling <fun_test2> in all calling <2>, expect:<a> but was:<b>")" "$msg"
+	mock_verify fun_test2 COOP_CALLED_WITH_ARGS a 2>&1 1>/dev/null
 	mock_verify_all_called_end
 	assertEquals "$LINENO" 0 $?
 
@@ -248,22 +248,22 @@ test_verify_multi_function_history() {
 
 	msg="$(mock_verify_all_called_end 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "More unexpected called in all calling" "$msg"
-	mock_verify_all_called_end 2>/dev/null
+	assertEquals "$LINENO" "$(print_error "More unexpected called in all calling")" "$msg"
+	mock_verify_all_called_end 2>&1 1>/dev/null
 
 	mock_verify fun_test1 COOP_CALLED_WITH_ARGS a
 	mock_verify fun_test2 COOP_CALLED_WITH_ARGS b
 	mock_verify fun_test1 COOP_CALLED_WITH_ARGS __ANY_LAST__
 	assertEquals "$LINENO" 0 $?
-	mock_verify_all_called_end
+	mock_verify_all_called_end 
 
 	msg="$(mock_verify fun_test1 COOP_CALLED_WITH_ARGS 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "More unexpected arguments, passed <1> arguments to <1> calling <fun_test1> in all calling <1>" "$msg"
+	assertEquals "$LINENO" "$(print_error "More unexpected arguments, passed <1> arguments to <1> calling <fun_test1> in all calling <1>")" "$msg"
 	mock_verify fun_test1 COOP_CALLED_WITH_ARGS a
 	msg="$(mock_verify fun_test2 COOP_CALLED_WITH_ARGS b x 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "Few expected arguments, passed <1> arguments to <1> calling <fun_test2> in all calling <2>" "$msg"
+	assertEquals "$LINENO" "$(print_error "Few expected arguments, passed <1> arguments to <1> calling <fun_test2> in all calling <2>")" "$msg"
 	mock_verify fun_test2 COOP_CALLED_WITH_ARGS b
 	mock_verify fun_test1 COOP_CALLED_WITH_ARGS __ANY_VALUE__
 	assertEquals "$LINENO" 0 $?
@@ -276,13 +276,13 @@ test_verify_only_called() {
 
 	msg="$(mock_verify fun_test ONLY_CALLED_WITH a 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "Expect <fun_test> shall never be called <1> times, but called <0> time(s)" "$msg"
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called <1> times, but called <0> time(s)")" "$msg"
 	
 	fun_test 'x y'
 	
 	msg="$(mock_verify fun_test ONLY_CALLED_WITH b 2>&1)"
 	assertEquals "$LINENO" 1 $?
-	assertEquals "$LINENO" "Unexpected argument <1> in the calling <1> of <fun_test>, expect:<b> but was:<x y>" "$msg"
+	assertEquals "$LINENO" "$(print_error "Unexpected argument <1> in the calling <1> of <fun_test>, expect:<b> but was:<x y>")" "$msg"
 }
 
 

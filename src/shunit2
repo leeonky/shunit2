@@ -882,7 +882,9 @@ _shunit_assertFail()
   __shunit_testSuccess=${SHUNIT_FALSE}
   __shunit_assertsFailed=`expr ${__shunit_assertsFailed} + 1`
   __shunit_assertsTotal=`expr ${__shunit_assertsTotal} + 1`
+  printf "\033[31m"
   echo "${__SHUNIT_ASSERT_MSG_PREFIX}${_shunit_msg_}"
+  printf "\033[0m"
 
   unset _shunit_msg_
 }
