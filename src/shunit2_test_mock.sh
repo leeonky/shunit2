@@ -97,6 +97,12 @@ test_mock_call_with_args() {
 	fun_test c d
 	assertEquals c $(get_global_var __mocked_fun fun_test called_args 3 1)
 	assertEquals d $(get_global_var __mocked_fun fun_test called_args 3 2)
+
+	fun_test c d e f
+	assertEquals c $(get_global_var __mocked_fun fun_test called_args 4 1)
+	assertEquals d $(get_global_var __mocked_fun fun_test called_args 4 2)
+	assertEquals e $(get_global_var __mocked_fun fun_test called_args 4 3)
+	assertEquals f $(get_global_var __mocked_fun fun_test called_args 4 4)
 }
 
 test_mock_coop_call_with_args() {
