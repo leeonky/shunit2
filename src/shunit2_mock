@@ -181,6 +181,38 @@ mock_verify() {
 		mock_verify $fun_name EXACTLY_CALLED 1 && \
 		mock_verify $fun_name IN_CALL 1 WITH_ARGS "$@"
 	;;
+	NEVER_CALLED_WITH)
+		shift 2
+		local expect_times
+		for ((expect_times=1; expect_times<=called_times; expect_times++))
+		do
+			local passed_arg_count=$(get_subvars_count __mocked_fun $fun_name called_args $expect_times)
+			if [ $passed_arg_count == $# ] || [ $((passed_arg_count+1)) == $# ]; then
+				local arg
+				local i=0
+				local result=matched
+				for arg in "$@"
+				do
+					if [ "$arg" == __ANY_LAST__ ]; then
+						break
+					fi
+					((i++))
+					if [ __ANY_VALUE__ != "$arg" ]; then
+						local real_arg="$(get_global_var __mocked_fun $fun_name called_args $expect_times $i)" 
+						if [ "$arg" != "$real_arg" ]; then
+							result=mismatch
+							break
+						fi
+					fi
+				done
+				if [ $result == matched ]; then
+					local args="$@"
+					print_error "Expect <fun_test> shall never be called with args <$args>."
+					return $?
+				fi
+			fi
+		done
+	;;
 	esac
 }
 

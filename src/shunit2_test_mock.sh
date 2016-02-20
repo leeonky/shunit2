@@ -291,5 +291,35 @@ test_verify_only_called() {
 	assertEquals "$LINENO" "$(print_error "Unexpected argument <1> in the calling <1> of <fun_test>, expect:<b> but was:<x y>")" "$msg"
 }
 
+test_verify_never_called_with_args(){
+	mock_function fun_test
+
+	fun_test b
+
+	mock_verify fun_test NEVER_CALLED_WITH a
+        assertEquals "$LINENO" 0 $?
+
+	msg="$(mock_verify fun_test NEVER_CALLED_WITH b 2>&1)"
+	assertEquals "$LINENO" 1 $?
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called with args <b>.")" "$msg"
+
+	fun_test a b
+	msg="$(mock_verify fun_test NEVER_CALLED_WITH a b 2>&1)"
+	assertEquals "$LINENO" 1 $?
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called with args <a b>.")" "$msg"
+
+	
+	msg="$(mock_verify fun_test NEVER_CALLED_WITH b __ANY_LAST__ 2>&1)"
+	assertEquals "$LINENO" 1 $?
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called with args <b __ANY_LAST__>.")" "$msg"
+
+	msg="$(mock_verify fun_test NEVER_CALLED_WITH __ANY_LAST__ 2>&1)"
+	assertEquals "$LINENO" 1 $?
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called with args <__ANY_LAST__>.")" "$msg"
+
+	msg="$(mock_verify fun_test NEVER_CALLED_WITH __ANY_VALUE__ b 2>&1)"
+	assertEquals "$LINENO" 1 $?
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called with args <__ANY_VALUE__ b>.")" "$msg"
+}
 
 . ${TH_SHUNIT}
