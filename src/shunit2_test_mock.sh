@@ -320,6 +320,51 @@ test_verify_never_called_with_args(){
 	msg="$(mock_verify fun_test NEVER_CALLED_WITH __ANY_VALUE__ b 2>&1)"
 	assertEquals "$LINENO" 1 $?
 	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall never be called with args <__ANY_VALUE__ b>.")" "$msg"
+
+	mock_verify fun_test NEVER_CALLED_WITH a
+        assertEquals "$LINENO" 0 $?
+
+	mock_verify fun_test NEVER_CALLED_WITH a b c
+        assertEquals "$LINENO" 0 $?
+}
+
+test_veriyf_has_called_with_args() {
+	mock_function fun_test
+
+	fun_test b
+
+	mock_verify fun_test HAS_CALLED_WITH b
+        assertEquals "$LINENO" 0 $?
+
+	msg="$(mock_verify fun_test HAS_CALLED_WITH a 2>&1)"
+	assertEquals "$LINENO" 1 $?
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall be called with args <a>.")" "$msg"
+
+	fun_test a b
+	mock_verify fun_test HAS_CALLED_WITH a b
+        assertEquals "$LINENO" 0 $?
+
+	mock_verify fun_test HAS_CALLED_WITH a __ANY_LAST__
+        assertEquals "$LINENO" 0 $?
+
+	mock_verify fun_test HAS_CALLED_WITH __ANY_LAST__
+        assertEquals "$LINENO" 0 $?
+
+	msg="$(mock_verify fun_test HAS_CALLED_WITH a 2>&1)"
+	assertEquals "$LINENO" 1 $?
+	assertEquals "$LINENO" "$(print_error "Expect <fun_test> shall be called with args <a>.")" "$msg"
+
+	mock_verify fun_test HAS_CALLED_WITH __ANY_VALUE__ b
+        assertEquals "$LINENO" 0 $?
+
+	mock_verify fun_test HAS_CALLED_WITH a __ANY_VALUE__
+        assertEquals "$LINENO" 0 $?
+
+	mock_verify fun_test HAS_CALLED_WITH a b __ANY_VALUE__
+        assertEquals "$LINENO" 0 $?
+
+	mock_verify fun_test HAS_CALLED_WITH a b __ANY_LAST__
+        assertEquals "$LINENO" 0 $?
 }
 
 . ${TH_SHUNIT}
