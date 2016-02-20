@@ -207,7 +207,7 @@ mock_verify() {
 				done
 				if [ $result == matched ]; then
 					local args="$@"
-					print_error "Expect <fun_test> shall never be called with args <$args>."
+					print_error "Expect <$fun_name> shall never be called with args <$args>."
 					return $?
 				fi
 			fi
