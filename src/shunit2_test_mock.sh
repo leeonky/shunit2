@@ -22,11 +22,13 @@ test_get_nonexist_single_var() {
 
 test_rm_single_var() {
 	clear_global_vars
+	set_global_var var var var2 value
+	set_global_var var var var value
 
-	set_global_var var value
-	rm_global_var var
+	rm_global_var var var var
 
-	assertEquals '' "$(get_global_var var)"
+	assertEquals '' "$(get_global_var var var var)"
+	assertEquals value "$(get_global_var var var var2)"
 }
 
 test_set_array_vars() {

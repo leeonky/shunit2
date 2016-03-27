@@ -31,7 +31,13 @@ get_global_var() {
 }
 
 rm_global_var() {
-	local tmp_file="$TEST_WORKING_PATH/$1"
+	local tmp_file="$TEST_WORKING_PATH"
+	local i
+	for ((i=0; i<$#; ))
+	do
+		tmp_file="$tmp_file/$1"
+		shift
+	done
 	/bin/rm -rf "$tmp_file"
 }
 
