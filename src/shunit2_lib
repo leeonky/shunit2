@@ -1,0 +1,20 @@
+function assertFileExist() {
+        [ -e $1 ]
+        assertTrue "Expect file $1 should be exist." $?
+}
+
+function assertDirExist() {
+        [ -d $1 ]
+        assertTrue "Expect dir $1 should be exist." $?
+}
+
+function assertFileNotExist() {
+        [ -e $1 ]
+        assertFalse "Expect file $1 not exist." $?
+}
+
+function assertDirNotExist() {
+        [ -d $1 ]
+        assertFalse "Expect dir $1 not exist." $?
+}
+
