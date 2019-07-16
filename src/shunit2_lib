@@ -18,3 +18,8 @@ function assertDirNotExist() {
         assertFalse "Expect dir $1 not exist." $?
 }
 
+assertGrep() {
+	grep -q "$1" "$2"
+	assertTrue "Expect file '$1' grep in $2." $?
+}
+
